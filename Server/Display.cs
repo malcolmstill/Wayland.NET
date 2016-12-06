@@ -21,8 +21,8 @@ namespace Wayland.Server
 
 	[DllImport(lib)]
 	private static extern IntPtr wl_display_get_event_loop(IntPtr display);
-	public IntPtr GetEventLoop() {
-	    return wl_display_get_event_loop(this.display);
+	public EventLoop GetEventLoop() {
+	    return new EventLoop(wl_display_get_event_loop(this.display));
 	}
 	
 	[DllImport(lib)]
@@ -79,16 +79,6 @@ namespace Wayland.Server
 
 	[DllImport(lib, EntryPoint="wl_resource_get_id")]
 	public static extern UInt32 ResourceGetID(IntPtr resource);
-
-	// Event loop
-
-	[DllImport(lib, EntryPoint="wl_event_loop_dispatch")]
-	public static extern Int32 EventLoopDispatch(IntPtr event_loop, Int32 timeout);
-
-	[DllImport(lib, EntryPoint="wl_event_loop_add_fd")]
-	public static extern IntPtr EventLoopAddFD(IntPtr event_loop, Int32 fd, UInt32 mask, IntPtr func, IntPtr data);
-	
-
 	
 	static void Main(string[] args)
 	{
@@ -105,7 +95,15 @@ namespace Wayland.Server
 	    Console.WriteLine("Next serial: {0}", display.NextSerial());
 
 	    display.InitSHM();
-	    display.Run();
+
+	    EventLoop eventLoop = display.GetEventLoop();
+	    Console.WriteLine("Event loop: {0}", eventLoop);
+
+	    while (true) {
+		eventLoop.Dispatch(1000);
+		Console.WriteLine("Loop");
+	    }
+	    // display.Run();
 	}
     }
 }
