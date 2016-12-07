@@ -9,7 +9,7 @@ namespace Wayland.Server
 	const string lib = "libwayland-server.so";
 	IntPtr buffer;
 
-	public string ToString() {
+	public override string ToString() {
 	    return "Wayland.Server.SHMBuffer@" + this.buffer;
 	}
 
@@ -34,7 +34,7 @@ namespace Wayland.Server
 	[DllImport(lib)]
 	private static extern IntPtr wl_shm_buffer_get_data(IntPtr buffer);
 	public IntPtr GetData() {
-	    return wl_shm_buffer_begin_get_data(this.buffer);
+	    return wl_shm_buffer_get_data(this.buffer);
 	}
 
 	[DllImport(lib)]

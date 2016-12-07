@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Wayland.Server
 {
-    class EventLoop
+    public class EventLoop
     {
 	const string lib = "libwayland-server.so";
 	IntPtr eventLoop;

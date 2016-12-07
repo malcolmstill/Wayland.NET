@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace Wayland.Server
 {
-    class Display
+    public class Display
     {
 	const string lib = "libwayland-server.so";
 	IntPtr display;
 
 	public override string ToString() {
-	    return "Wayland.Server.Display@" + this.display;
+	    return string.Format("Wayland.Server.Display@0x{0:X8}", this.display.ToInt32());
 	}
 	
 	[DllImport(lib)]
@@ -67,42 +67,12 @@ namespace Wayland.Server
 	public Int32 InitSHM() {
 	    return wl_display_init_shm(this.display);
 	}
-
-	[DllImport(lib, EntryPoint="wl_resouce_post_event", CallingConvention = CallingConvention.Cdecl)]
-	public static extern void ResourcePostEvent(IntPtr resource, UInt32 opcode, __arglist);
-
-	[DllImport(lib, EntryPoint="wl_resource_create")]
-	public static extern IntPtr ResourceCreate(IntPtr client, IntPtr _interface, Int32 version, UInt32 id);
-
-	[DllImport(lib, EntryPoint="wl_resource_set_implementation")]
-	public static extern void ResourceSetImplementation(IntPtr resource, IntPtr implementation, IntPtr data, IntPtr destroy);
-
-	[DllImport(lib, EntryPoint="wl_resource_get_id")]
-	public static extern UInt32 ResourceGetID(IntPtr resource);
 	
 	static void Main(string[] args)
 	{
 	    Console.WriteLine("WaylandServer test suite");
 	    Console.WriteLine("------------------------");
-	    
-	    Display display = new Display();
-	    Console.WriteLine("Display: {0}", display);
 
-	    Console.WriteLine("Socket: {0}", display.AddSocketAuto());
-
-	    Console.WriteLine("Get serial: {0}", display.GetSerial());
-	    Console.WriteLine("Next serial: {0}", display.NextSerial());
-	    Console.WriteLine("Next serial: {0}", display.NextSerial());
-
-	    display.InitSHM();
-
-	    EventLoop eventLoop = display.GetEventLoop();
-	    Console.WriteLine("Event loop: {0}", eventLoop);
-
-	    while (true) {
-		eventLoop.Dispatch(1000);
-		Console.WriteLine("Loop");
-	    }
 	    // display.Run();
 	}
     }
