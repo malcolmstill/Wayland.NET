@@ -30,12 +30,17 @@ namespace Wayland.Scanner
 
 	public string ToStructMethod()
 	{
-	    return string.Format("\t\t\tpublic Callback{0} {1};", this.name, Char.ToLower(this.name[0]) + this.name.Substring(1));
+	    return string.Format("\t\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl)]\n\t\t\tpublic delegate void Callback{0}(IntPtr client, IntPtr resource{1});", this.name, String.Join("", arguments.Select(a => a.ToCSharpTypeName()))) + string.Format("\n\t\t\t[MarshalAs(UnmanagedType.FunctionPtr)]\n\t\t\tpublic Callback{0} {1};", this.name, Char.ToLower(this.name[0]) + this.name.Substring(1)) + "\n";
+	}
+
+	public string ToInitializeImplementation()
+	{
+	    return "\t\t\timpl." + Char.ToLower(this.name[0]) + this.name.Substring(1) + " = this." + this.name + ";";
 	}
 	
 	public string ToDefaultMethod()
 	{
-	    return string.Format("\t\t\tpublic void {0}(IntPtr client, IntPtr resource{1})\n{{\nConsole.WriteLine(\"{0}\");\n}}", this.name, String.Join("", arguments.Select(a => a.ToCSharpTypeName())));
+	    return string.Format("\t\tpublic void {0}(IntPtr client, IntPtr resource{1})\n\t\t{{\n\t\t\tConsole.WriteLine(\"{0}\");\n\t\t}}", this.name, String.Join("", arguments.Select(a => a.ToCSharpTypeName())));
 	}
     }
 }
