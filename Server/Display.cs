@@ -1,13 +1,15 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace Wayland.Server
-{
+{   
     public class Display
     {
 	const string lib = "libwayland-server.so";
 	IntPtr display;
+	public static List<Client> clients = new List<Client>();
 
 	public override string ToString() {
 	    return string.Format("Wayland.Server.Display@0x{0:X8}", this.display.ToInt32());
@@ -43,6 +45,10 @@ namespace Wayland.Server
 	    wl_display_terminate(this.display);
 	}
 
+	~Display() {
+	    this.Terminate();
+	}
+	
 	[DllImport(lib)]
 	private static extern void wl_display_flush_clients(IntPtr display);
 	public void FlushClients() {
@@ -64,8 +70,36 @@ namespace Wayland.Server
 
 	[DllImport(lib)]
 	private static extern Int32 wl_display_init_shm(IntPtr display);
-	public Int32 InitSHM() {
+	public Int32 InitSHM()
+	{
 	    return wl_display_init_shm(this.display);
+	}
+
+	public delegate void GlobalBindFunction(IntPtr client, IntPtr data, UInt32 version, UInt32 id);
+	[DllImport(lib)]
+	private static extern IntPtr wl_global_create(IntPtr display, IntPtr iface, int version, IntPtr data, GlobalBindFunction bind);
+	public void GlobalCreate(IntPtr iface, int version, IntPtr data, GlobalBindFunction bind)
+	{
+	    wl_global_create(this.display, iface, version, data, bind);
+	}
+
+	public void GlobalCreate(Global global)
+	{
+	    GlobalBindFunction bind = new GlobalBindFunction(global.Bind);
+	    wl_global_create(this.display, global.InterfacePointer, 1, IntPtr.Zero, bind);
+	}
+
+	public static Client GetClient(IntPtr clientPointer) {
+	    foreach(Client client in clients)
+	    {
+		if (client.clientPointer == clientPointer)
+		{
+		    return client;
+		}
+	    }
+	    Client newClient = new Client(clientPointer);
+	    Display.clients.Add(newClient);
+	    return newClient;
 	}
 	
 	static void Main(string[] args)

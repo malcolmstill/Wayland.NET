@@ -23,7 +23,7 @@ namespace Wayland.Scanner {
 	}
 
 	public override string ToString() {
-			return string.Format("\n\t\t[DllImport(\"libwayland-server.so\")]" +
+			return string.Format("\n\t\t[DllImport(\"libwayland-server.so\", EntryPoint=\"wl_resource_post_event\")]" +
 				"\n\t\tprivate static extern void wl_resource_post_event_{0}(IntPtr resource, Int32 number{1});" +
 				"\n\t\tpublic void {3}({2}) {{" +
 				"\n\t\t\twl_resource_post_event_{0}(this.resource, {4}{5});" +
