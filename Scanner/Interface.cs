@@ -10,12 +10,14 @@ namespace Wayland.Scanner {
 
 	public string name;
 	private string protocol;
+	private string version;
 	private List<Event> events = new List<Event>();
 	private List<Request> requests = new List<Request>();
 	
 	public Interface(XmlNode node, string protocol) {
 	    this.protocol = protocol;
 	    this.name = node.Attributes.GetNamedItem("name").Value;
+	    this.version = node.Attributes.GetNamedItem("version").Value;
 	    foreach(XmlNode requestNode in node.SelectNodes("request")) {
 		Request r = new Request(requestNode);
 		requests.Add(r);
@@ -47,7 +49,7 @@ namespace Wayland.Scanner {
 	*/
 	public string ToInitInterface()
 	{
-	    return "\t\tpublic static Interface " + Scanner.ParameterCase(this.name) + "Interface = new Interface(\"" + this.name + "\", 1, " + requests.Count() + ", " + events.Count() + ");";
+	    return "\t\tpublic static Interface " + Scanner.ParameterCase(this.name) + "Interface = new Interface(\"" + this.name + "\", " + version  +", " + requests.Count() + ", " + events.Count() + ");";
 	}
 
 	public string ToAddToDict()

@@ -8,6 +8,7 @@ namespace Wayland.Server
     public class Resource
     {
 	const string lib = "/usr/local/lib/libwayland-server.so";
+	//const string lib = "libwayland-server.so";
 	
 	// [DllImport(lib, EntryPoint="wl_resouce_post_event", CallingConvention = CallingConvention.Cdecl)]
 	// public static extern void PostEvent(IntPtr resource, UInt32 opcode, __arglist);
