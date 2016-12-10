@@ -22,7 +22,35 @@ namespace Wayland.Scanner {
 	    }
 	}
 
-	public override string ToString() {
+	public List<string> ToTypesInit()
+	{
+	    List<string> res = new List<string>();
+	    foreach(Argument a in arguments)
+	    {
+		res.Add(a.iface);
+	    }
+	    return res;
+	}
+
+	private string Signature()
+	{
+	    string signature = "";
+	    foreach (Argument a in arguments)
+	    {
+		signature += a.Signature();
+	    }
+	    return signature;
+	}
+	
+	public string ToSetROE(string types)
+	{
+	    string res = "\n\t\t\t\tnew Message(\"" + this.name + "\", \"" + this.Signature() + "\", " + types + " + Marshal.SizeOf(typeof(IntPtr)) * " + (arguments.Count() == 0 ? 0 : Protocol.offset) + ")";
+	    Protocol.offset += arguments.Count();
+	    return res;
+	}
+
+	public override string ToString()
+	{
 			return string.Format("\n\t\t[DllImport(\"libwayland-server.so\", EntryPoint=\"wl_resource_post_event\")]" +
 				"\n\t\tprivate static extern void wl_resource_post_event_{0}(IntPtr resource, Int32 number{1});" +
 				"\n\t\tpublic void {3}({2}) {{" +

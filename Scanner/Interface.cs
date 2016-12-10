@@ -8,7 +8,7 @@ namespace Wayland.Scanner {
 
     public class Interface {
 
-	private string name;
+	public string name;
 	private string protocol;
 	private List<Event> events = new List<Event>();
 	private List<Request> requests = new List<Request>();
@@ -28,6 +28,9 @@ namespace Wayland.Scanner {
 	    }
 	}
 
+	/*
+	  Functions for loading interface pointers from libwayland
+	 */
 	public string ToInterfaceMember() {
 	    return "\t\tpublic static IntPtr " + Scanner.ParameterCase(this.name) + "Interface { get; set; } = IntPtr.Zero;";
 	}
@@ -35,9 +38,48 @@ namespace Wayland.Scanner {
 	public string ToLoadSym() {
 	    return "\t\t\t" + Scanner.ParameterCase(this.name) + "Interface =" + string.Format(" dlsym(lib, \"{0}\");", this.name + "_interface");
 	}
+	/*
+	  End functions for loading interface pointers from libwayland
+	 */
+
+	/*
+	  Functions for generating interfaces pointers
+	*/
+	public string ToInitInterface()
+	{
+	    return "\t\tpublic static Interface " + Scanner.ParameterCase(this.name) + "Interface = new Interface(\"" + this.name + "\", 1, " + requests.Count() + ", " + events.Count() + ");";
+	}
+
+	public string ToAddToDict()
+	{
+	    return "\t\t\tUtils.Interfaces.Add(\"" + this.name + "_interface\", " + Scanner.ParameterCase(this.name) + "Interface.GetInterface());";
+	}
+
+	public List<string> ToTypesInit()
+	{
+	    List<string> res = new List<string>();
+	    foreach (Request r in requests)
+	    {
+		res.AddRange(r.ToTypesInit());
+	    }
+	    foreach (Event e in events)
+	    {
+		res.AddRange(e.ToTypesInit());
+	    }
+	    return res;
+	}
+
+	public string ToSetROE(string types)
+	{
+	    return "\t\t\t" + Scanner.ParameterCase(name) + "Interface.SetRequests(" + String.Join(", ", requests.Select(r => r.ToSetROE(types))) +  ");\n"
+		+ "\t\t\t" + Scanner.ParameterCase(name) + "Interface.SetEvents(" + String.Join(", ", events.Select(r => r.ToSetROE(types))) +  ");";
+	}
+	/*
+	  End functions for generating interface pointers
+	 */
 	
 	public override string ToString() {
-	    return "\n\tpublic class " + Scanner.TitleCase(name) + " {" + 
+	    return "\n\tpublic class " + Scanner.TitleCase(name) + " \n\t{" + 
 		"\n\t\tprivate IntPtr resource;\n" +
 		"\t\tprivate IntPtr client;\n" +
 		"\t\tprivate IntPtr implementation;\n" +
@@ -49,7 +91,7 @@ namespace Wayland.Scanner {
 		"\n\t\t}\n" +
 		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr client, UInt32 id) {\n" +
 		"\t\t\tthis.client = client;\n" +
-		string.Format("\t\t\tthis.resource = Resource.Create(this.client, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface") +
+		string.Format("\t\t\tthis.resource = Resource.Create(this.client, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
 		Scanner.TitleCase(name) + "Implementation managedImplementation = this.InitializeImplementation();" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
 	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);" +

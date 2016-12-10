@@ -83,10 +83,10 @@ namespace Wayland.Server
 	    wl_global_create(this.display, iface, version, data, bind);
 	}
 
-	public void GlobalCreate(Global global)
+	public void GlobalCreate(Global global, int version)
 	{
 	    GlobalBindFunction bind = new GlobalBindFunction(global.Bind);
-	    wl_global_create(this.display, global.InterfacePointer, 1, IntPtr.Zero, bind);
+	    wl_global_create(this.display, global.InterfacePointer, version, IntPtr.Zero, bind);
 	}
 
 	public static Client GetClient(IntPtr clientPointer) {
