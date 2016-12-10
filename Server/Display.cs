@@ -92,7 +92,7 @@ namespace Wayland.Server
 	public static Client GetClient(IntPtr clientPointer) {
 	    foreach(Client client in clients)
 	    {
-		if (client.clientPointer == clientPointer)
+		if (client.clientPtr == clientPointer)
 		{
 		    return client;
 		}

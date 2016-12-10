@@ -47,6 +47,17 @@ namespace Wayland.Scanner {
 	/*
 	  Functions for generating interfaces pointers
 	*/
+	public string MakeGlobal()
+	{
+	    return "\n\tpublic class " + Scanner.TitleCase(name) + "Global : Global" +
+		"\n\t{" +
+		"\n\t\tpublic " + Scanner.TitleCase(name) + "Global()" +
+		"\n\t\t{" +
+		"\n\t\t\t this.SetInterface(\"" + name + "_interface\");" +
+		"\n\t\t}" +
+		"\n\t}\n";
+	}
+	
 	public string ToInitInterface()
 	{
 	    return "\t\tpublic static Interface " + Scanner.ParameterCase(this.name) + "Interface = new Interface(\"" + this.name + "\", " + version  +", " + requests.Count() + ", " + events.Count() + ");";
@@ -81,7 +92,7 @@ namespace Wayland.Scanner {
 	 */
 	
 	public override string ToString() {
-	    return "\n\tpublic class " + Scanner.TitleCase(name) + " \n\t{" + 
+	    return this.MakeGlobal() + "\n\tpublic class " + Scanner.TitleCase(name) + " \n\t{" + 
 		"\n\t\tprivate IntPtr resource;\n" +
 		"\t\tprivate IntPtr client;\n" +
 		"\t\tprivate IntPtr implementation;\n" +

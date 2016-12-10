@@ -6,21 +6,21 @@ namespace Wayland.Server
 {
     public class Client : IEquatable<Client>
     {
-	public IntPtr clientPointer { get; set; }
+	public IntPtr clientPtr { get; set; }
 	public List<object> resources = new List<object>();
 
 	public Client(IntPtr clientPointer)
 	{
-	    this.clientPointer = clientPointer;
+	    this.clientPtr = clientPointer;
 	}
 
 	public override string ToString() {
-	    return string.Format("Client@{0}", clientPointer);
+	    return string.Format("Client@{0}", clientPtr);
 	}
 
 	public bool Equals(Client other)
 	{
-	    return this.clientPointer == other.clientPointer;
+	    return this.clientPtr == other.clientPtr;
 	}
 	
 	public override bool Equals(Object obj)
@@ -30,7 +30,7 @@ namespace Wayland.Server
 
 	public override int GetHashCode()
 	{
-	    return this.clientPointer.GetHashCode();
+	    return this.clientPtr.GetHashCode();
 	}
 
 	public static bool operator ==(Client client1, Client client2)
