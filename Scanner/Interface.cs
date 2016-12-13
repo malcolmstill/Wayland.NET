@@ -92,10 +92,10 @@ namespace Wayland.Scanner {
 	 */
 	
 	public override string ToString() {
-	    return this.MakeGlobal() + "\n\tpublic class " + Scanner.TitleCase(name) + " \n\t{" + 
-		"\n\t\tprivate IntPtr resource;\n" +
-		"\t\tprivate IntPtr client;\n" +
-		"\t\tprivate IntPtr implementation;\n" +
+	    return this.MakeGlobal() + "\n\tpublic class " + Scanner.TitleCase(name) + " : Resource \n\t{" + 
+		//"\n\t\tpublic IntPtr resource;\n" +
+		//"\t\tprivate IntPtr client;\n" +
+		"\n\t\tprivate " + Scanner.TitleCase(name) + "Implementation managedImplementation; // Store managed copy of implementation so delegates are not GC'd\n" +
 		"\n\t\tpublic " + Scanner.TitleCase(name) + "Implementation InitializeImplementation()"+
 		"\n\t\t{" +
 		"\n\t\t\t" + Scanner.TitleCase(name) + "Implementation impl = new " + Scanner.TitleCase(name) + "Implementation();\n" +
@@ -105,12 +105,25 @@ namespace Wayland.Scanner {
 		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr client, UInt32 id) {\n" +
 		"\t\t\tthis.client = client;\n" +
 		string.Format("\t\t\tthis.resource = Resource.Create(this.client, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
-		Scanner.TitleCase(name) + "Implementation managedImplementation = this.InitializeImplementation();" +
+		"managedImplementation = this.InitializeImplementation();" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
 	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);" +
 	    "\n\t\t\tClient c = Display.GetClient(client);" +
 	    "\n\t\t\tc.resources.Add(this);\n" + 
 		"\t\t}\n" +
+		// Have a second constructor where we can set an alternative resource as data to SetImplementation	
+		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr client, UInt32 id, IntPtr otherResource) {\n" +
+		"\t\t\tthis.client = client;\n" +
+		string.Format("\t\t\tthis.resource = Resource.Create(this.client, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
+		"managedImplementation = this.InitializeImplementation();" +
+		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
+	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);" +
+	    "\n\t\t\tClient c = Display.GetClient(client);" +
+	    "\n\t\t\tc.resources.Add(this);\n" + 
+		"\t\t}\n" +
+		"\n\t\t~" + Scanner.TitleCase(name) +  "() {\n" +
+		"\n\t\t\tMarshal.FreeHGlobal(this.implementation);" +
+		"\n\t\t}\n" +
 //		"\n" + String.Join("\n", requests.Select(i => i.ToDelegate())) +
 		"\n\n\t\t[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]\n\t\tpublic struct " + Scanner.TitleCase(name) + "Implementation\n\t\t{\n" +
 		String.Join("\n", requests.Select(i => i.ToStructMethod())) +

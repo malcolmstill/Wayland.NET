@@ -6,48 +6,65 @@ namespace Wayland.Server
 {
     public class Client : IEquatable<Client>
     {
-	public IntPtr clientPtr { get; set; }
-	public List<object> resources = new List<object>();
+		public readonly IntPtr clientPtr;
+		public List<Resource> resources = new List<Resource>();
+		public List<WlRegion> regions = new List<WlRegion>();
+		public object keyboard;
+		public object pointer;
 
-	public Client(IntPtr clientPointer)
-	{
-	    this.clientPtr = clientPointer;
-	}
+		public Client(IntPtr clientPointer)
+		{
+			this.clientPtr = clientPointer;
+		}
 
-	public override string ToString() {
-	    return string.Format("Client@{0}", clientPtr);
-	}
+		public void RemoveResource(IntPtr resource)
+		{
+			Resource r = FindResource(resource);
+			if (r != null) 
+			{
+				resources.Remove(r);
+			}
+		}
 
-	public bool Equals(Client other)
-	{
-	    return this.clientPtr == other.clientPtr;
-	}
-	
-	public override bool Equals(Object obj)
-	{
-	    return false;
-	}
+		public Resource FindResource(IntPtr pointer)
+		{
+			return resources.Find(r => r.resource == pointer);
+		}
 
-	public override int GetHashCode()
-	{
-	    return this.clientPtr.GetHashCode();
-	}
+		public override string ToString() {
+			return string.Format("Client@{0}", clientPtr);
+		}
 
-	public static bool operator ==(Client client1, Client client2)
-	{
-	    if ( ((object)client1) == null || ((object)client2) == null )
-	    {
-		return Object.Equals(client1, client2);
-	    }
-	    return client1.Equals(client2);
-	}
-	    
-	public static bool operator !=(Client client1, Client client2)
-	{
-	    if (((object)client1) == null || ((object)client2) == null)
-		return ! Object.Equals(client1, client2);
-	    
-	    return ! (client1.Equals(client2));
-	}
+		public bool Equals(Client other)
+		{
+			return this.clientPtr == other.clientPtr;
+		}
+		
+		public override bool Equals(Object obj)
+		{
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return this.clientPtr.GetHashCode();
+		}
+
+		public static bool operator ==(Client client1, Client client2)
+		{
+			if ( ((object)client1) == null || ((object)client2) == null )
+			{
+			return Object.Equals(client1, client2);
+			}
+			return client1.Equals(client2);
+		}
+			
+		public static bool operator !=(Client client1, Client client2)
+		{
+			if (((object)client1) == null || ((object)client2) == null)
+			return ! Object.Equals(client1, client2);
+			
+			return ! (client1.Equals(client2));
+		}
     }
 }
