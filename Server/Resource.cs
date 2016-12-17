@@ -7,7 +7,8 @@ namespace Wayland.Server
     public class Resource
     {
 		public IntPtr resource { get; set; } = IntPtr.Zero;
-		public IntPtr client { get; set; } = IntPtr.Zero;
+		//public IntPtr client { get; set; } = IntPtr.Zero;
+		public Client client = null;
 		public IntPtr implementation { get; set; } = IntPtr.Zero;
 
 		public override string ToString()
@@ -28,20 +29,31 @@ namespace Wayland.Server
 		public static extern void SetImplementation(IntPtr resource, IntPtr implementation, IntPtr data, IntPtr destroy);
 
 		[DllImport(lib, EntryPoint="wl_resource_get_id")]
-		public static extern UInt32 GetID(IntPtr resource);
+		private static extern UInt32 wl_resource_get_id(IntPtr resource);
+		public UInt32 GetID()
+		{
+			return wl_resource_get_id(resource);
+		}
 
 		[DllImport(lib, EntryPoint="wl_resource_get_user_data")]
 		public static extern IntPtr GetUserData(IntPtr resource);
 
-		[DllImport(lib, EntryPoint="wl_resource_destroy")]
-		private static extern void Destroy(IntPtr resource);
-		public void Destroy()
+		[DllImport(lib, EntryPoint="wl_resource_get_version")]
+		public static extern UInt32 GetVersion(IntPtr resource);
+		public UInt32 GetVersion()
 		{
-			Client c = Display.GetClient(client);
-			if (c != null)
+			return GetVersion(resource);
+		}
+
+		[DllImport(lib, EntryPoint="wl_resource_destroy")]
+		private static extern void wl_resource_destroy(IntPtr resource);
+		public void Remove()
+		{
+			//Client c = Display.GetClient(client);
+			if (client != null)
 			{
-				c.RemoveResource(resource);	
-				Destroy(resource);
+				client.RemoveResource(resource);	
+				wl_resource_destroy(resource);
 			}
 		}
     }

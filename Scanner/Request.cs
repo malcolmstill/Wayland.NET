@@ -65,7 +65,7 @@ namespace Wayland.Scanner
 	
 	public string ToDefaultMethod()
 	{
-	    return string.Format("\t\tpublic virtual void {0}(IntPtr client, IntPtr resource{1})\n\t\t{{\n\t\t\tConsole.WriteLine(\"{0}\");\n\t\t}}", Scanner.TitleCase(this.name), String.Join("", arguments.Select(a => a.ToCSharpTypeName())));
+	    return string.Format("\t\tpublic virtual void {0}(IntPtr client, IntPtr resource{1})\n\t\t{{\n\t\t\t//Console.WriteLine(\"{0}\");\n\t\t}}", Scanner.TitleCase(this.name), String.Join("", arguments.Select(a => a.ToCSharpTypeName())));
 	}
     }
 }

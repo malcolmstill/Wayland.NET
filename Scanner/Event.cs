@@ -58,7 +58,7 @@ namespace Wayland.Scanner {
 					     "\n\t\t}}", this.name,
 					     String.Join("", arguments.Select(a => a.ToCSharpTypeName())),
 					     (String.Join("", arguments.Select(a => a.ToCSharpTypeName())) == "") ? "" : String.Join("", arguments.Select(a => a.ToCSharpTypeName())).Substring(2),
-				Scanner.TitleCase(name), 
+				"Send" + Scanner.TitleCase(name), 
 				this.number,
 				String.Join("", arguments.Select(a => a.ToNameList())));
 

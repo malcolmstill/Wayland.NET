@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using Wayland.Server.Protocol;
 
 namespace Wayland.Server
 {
@@ -9,8 +10,8 @@ namespace Wayland.Server
 		public readonly IntPtr clientPtr;
 		public List<Resource> resources = new List<Resource>();
 		public List<WlRegion> regions = new List<WlRegion>();
-		public object keyboard;
-		public object pointer;
+		public WlKeyboard keyboard;
+		public WlPointer pointer;
 
 		public Client(IntPtr clientPointer)
 		{
@@ -32,7 +33,7 @@ namespace Wayland.Server
 		}
 
 		public override string ToString() {
-			return string.Format("Client@{0}", clientPtr);
+			return string.Format("<Client@{0:X8}>", clientPtr.ToInt32());
 		}
 
 		public bool Equals(Client other)
@@ -54,7 +55,7 @@ namespace Wayland.Server
 		{
 			if ( ((object)client1) == null || ((object)client2) == null )
 			{
-			return Object.Equals(client1, client2);
+				return Object.Equals(client1, client2);
 			}
 			return client1.Equals(client2);
 		}

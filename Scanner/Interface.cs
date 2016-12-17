@@ -102,26 +102,31 @@ namespace Wayland.Scanner {
 		String.Join("\n", requests.Select(i => i.ToInitializeImplementation())) +
 		"\n\t\t\treturn impl;" +
 		"\n\t\t}\n" +
-		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr client, UInt32 id) {\n" +
-		"\t\t\tthis.client = client;\n" +
-		string.Format("\t\t\tthis.resource = Resource.Create(this.client, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
+		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr clientPtr, UInt32 id, bool addToClient = true) \n\t\t{\n" +
+		"\t\t\tthis.client = Display.GetClient(clientPtr);\n" +
+		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
 		"managedImplementation = this.InitializeImplementation();" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
 	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);" +
-	    "\n\t\t\tClient c = Display.GetClient(client);" +
-	    "\n\t\t\tc.resources.Add(this);\n" + 
+	    //"\n\t\t\tClient c = Display.GetClient(client);" +
+	    "\n\t\t\tif (addToClient)" +
+		"\n\t\t\t{" +
+	    "\n\t\t\t\tclient.resources.Add(this);" + 
+		"\n\t\t\t}\n" +
 		"\t\t}\n" +
 		// Have a second constructor where we can set an alternative resource as data to SetImplementation	
-		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr client, UInt32 id, IntPtr otherResource) {\n" +
-		"\t\t\tthis.client = client;\n" +
-		string.Format("\t\t\tthis.resource = Resource.Create(this.client, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
+		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr clientPtr, UInt32 id, IntPtr otherResource, bool addToClient = true) \n\t\t{\n" +
+		"\t\t\tthis.client = Display.GetClient(clientPtr);\n" +
+		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
 		"managedImplementation = this.InitializeImplementation();" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
 	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);" +
-	    "\n\t\t\tClient c = Display.GetClient(client);" +
-	    "\n\t\t\tc.resources.Add(this);\n" + 
+	    "\n\t\t\tif (addToClient)" +
+		"\n\t\t\t{" +
+	    "\n\t\t\t\tclient.resources.Add(this);" + 
+		"\n\t\t\t}\n" +
 		"\t\t}\n" +
-		"\n\t\t~" + Scanner.TitleCase(name) +  "() {\n" +
+		"\n\t\t~" + Scanner.TitleCase(name) +  "() \n\t\t{" +
 		"\n\t\t\tMarshal.FreeHGlobal(this.implementation);" +
 		"\n\t\t}\n" +
 //		"\n" + String.Join("\n", requests.Select(i => i.ToDelegate())) +

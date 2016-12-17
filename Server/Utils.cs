@@ -11,7 +11,7 @@ namespace Wayland.Server
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_release(IntPtr resource, Int32 number);
-		public static void BufferRelease(IntPtr buffer) {
+		public static void ReleaseBuffer(IntPtr buffer) {
 			wl_resource_post_event_release(buffer, 0);
 		}
     }
@@ -75,7 +75,7 @@ namespace Wayland.Server
 
 		public void SetRequests(params Message[] requests)
 		{
-			//this.methods = requests;
+			this.methods = requests;
 			int i = 0;
 			foreach (Message request in requests)
 			{
@@ -86,7 +86,7 @@ namespace Wayland.Server
 
 		public void SetEvents(params Message[] events)
 		{
-			//this.events = events;
+			this.events = events;
 			int i = 0;
 			foreach (Message ev in events)
 			{
