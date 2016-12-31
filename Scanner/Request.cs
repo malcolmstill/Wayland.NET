@@ -9,11 +9,13 @@ namespace Wayland.Scanner
     public class Request
     {
 	private string name;
+	private string interfaceName;
 	private List<Argument> arguments = new List<Argument>();
 	
-	public Request(XmlNode node)
+	public Request(XmlNode node, string interfaceName)
 	{
 	    this.name = node.Attributes.GetNamedItem("name").Value;
+		this.interfaceName = interfaceName;
 	    foreach(XmlNode argNode in node.SelectNodes("arg"))
 	    {
 		Argument a = new Argument(argNode);
@@ -65,7 +67,7 @@ namespace Wayland.Scanner
 	
 	public string ToDefaultMethod()
 	{
-	    return string.Format("\t\tpublic virtual void {0}(IntPtr client, IntPtr resource{1})\n\t\t{{\n\t\t\t//Console.WriteLine(\"{0}\");\n\t\t}}", Scanner.TitleCase(this.name), String.Join("", arguments.Select(a => a.ToCSharpTypeName())));
+		return string.Format("\t\tpublic virtual void {0}(IntPtr client, IntPtr resource{1})\n\t\t{{\n\t\t\tConsole.WriteLine(\"{2}.{0}@\" + this);\n\t\t}}", Scanner.TitleCase(this.name), String.Join("", arguments.Select(a => a.ToCSharpTypeName())), Scanner.TitleCase(interfaceName));
 	}
     }
 }

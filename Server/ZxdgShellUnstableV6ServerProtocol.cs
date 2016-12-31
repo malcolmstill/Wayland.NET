@@ -157,9 +157,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgShellV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -171,17 +172,24 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgShellV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "ZxdgShellV6@" + resource;
+		}
+
 		~ZxdgShellV6() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -213,27 +221,28 @@ namespace XdgShellUnstableV6.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("ZxdgShellV6.Destroy@" + this);
 		}
 
 		public virtual void CreatePositioner(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("CreatePositioner");
+			Console.WriteLine("ZxdgShellV6.CreatePositioner@" + this);
 		}
 
 		public virtual void GetXdgSurface(IntPtr client, IntPtr resource, UInt32 id, IntPtr surface)
 		{
-			//Console.WriteLine("GetXdgSurface");
+			Console.WriteLine("ZxdgShellV6.GetXdgSurface@" + this);
 		}
 
 		public virtual void Pong(IntPtr client, IntPtr resource, UInt32 serial)
 		{
-			//Console.WriteLine("Pong");
+			Console.WriteLine("ZxdgShellV6.Pong@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_ping(IntPtr resource, Int32 number, UInt32 serial);
 		public void SendPing(UInt32 serial) {
+			//Console.WriteLine("ZxdgShellV6.SendPing@" + this);
 			wl_resource_post_event_ping(this.resource, 0, serial);
 		}
 	}
@@ -268,9 +277,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPositionerV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -282,17 +292,24 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPositionerV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "ZxdgPositionerV6@" + resource;
+		}
+
 		~ZxdgPositionerV6() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -339,37 +356,37 @@ namespace XdgShellUnstableV6.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("ZxdgPositionerV6.Destroy@" + this);
 		}
 
 		public virtual void SetSize(IntPtr client, IntPtr resource, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("SetSize");
+			Console.WriteLine("ZxdgPositionerV6.SetSize@" + this);
 		}
 
 		public virtual void SetAnchorRect(IntPtr client, IntPtr resource, Int32 x, Int32 y, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("SetAnchorRect");
+			Console.WriteLine("ZxdgPositionerV6.SetAnchorRect@" + this);
 		}
 
 		public virtual void SetAnchor(IntPtr client, IntPtr resource, UInt32 anchor)
 		{
-			//Console.WriteLine("SetAnchor");
+			Console.WriteLine("ZxdgPositionerV6.SetAnchor@" + this);
 		}
 
 		public virtual void SetGravity(IntPtr client, IntPtr resource, UInt32 gravity)
 		{
-			//Console.WriteLine("SetGravity");
+			Console.WriteLine("ZxdgPositionerV6.SetGravity@" + this);
 		}
 
 		public virtual void SetConstraintAdjustment(IntPtr client, IntPtr resource, UInt32 constraint_adjustment)
 		{
-			//Console.WriteLine("SetConstraintAdjustment");
+			Console.WriteLine("ZxdgPositionerV6.SetConstraintAdjustment@" + this);
 		}
 
 		public virtual void SetOffset(IntPtr client, IntPtr resource, Int32 x, Int32 y)
 		{
-			//Console.WriteLine("SetOffset");
+			Console.WriteLine("ZxdgPositionerV6.SetOffset@" + this);
 		}
 
 	}
@@ -402,9 +419,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgSurfaceV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -416,17 +434,24 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgSurfaceV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "ZxdgSurfaceV6@" + resource;
+		}
+
 		~ZxdgSurfaceV6() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -463,32 +488,33 @@ namespace XdgShellUnstableV6.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("ZxdgSurfaceV6.Destroy@" + this);
 		}
 
 		public virtual void GetToplevel(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("GetToplevel");
+			Console.WriteLine("ZxdgSurfaceV6.GetToplevel@" + this);
 		}
 
 		public virtual void GetPopup(IntPtr client, IntPtr resource, UInt32 id, IntPtr parent, IntPtr positioner)
 		{
-			//Console.WriteLine("GetPopup");
+			Console.WriteLine("ZxdgSurfaceV6.GetPopup@" + this);
 		}
 
 		public virtual void SetWindowGeometry(IntPtr client, IntPtr resource, Int32 x, Int32 y, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("SetWindowGeometry");
+			Console.WriteLine("ZxdgSurfaceV6.SetWindowGeometry@" + this);
 		}
 
 		public virtual void AckConfigure(IntPtr client, IntPtr resource, UInt32 serial)
 		{
-			//Console.WriteLine("AckConfigure");
+			Console.WriteLine("ZxdgSurfaceV6.AckConfigure@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_configure(IntPtr resource, Int32 number, UInt32 serial);
 		public void SendConfigure(UInt32 serial) {
+			//Console.WriteLine("ZxdgSurfaceV6.SendConfigure@" + this);
 			wl_resource_post_event_configure(this.resource, 0, serial);
 		}
 	}
@@ -530,9 +556,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgToplevelV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -544,17 +571,24 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgToplevelV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "ZxdgToplevelV6@" + resource;
+		}
+
 		~ZxdgToplevelV6() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -636,83 +670,85 @@ namespace XdgShellUnstableV6.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("ZxdgToplevelV6.Destroy@" + this);
 		}
 
 		public virtual void SetParent(IntPtr client, IntPtr resource, IntPtr parent)
 		{
-			//Console.WriteLine("SetParent");
+			Console.WriteLine("ZxdgToplevelV6.SetParent@" + this);
 		}
 
 		public virtual void SetTitle(IntPtr client, IntPtr resource, string title)
 		{
-			//Console.WriteLine("SetTitle");
+			Console.WriteLine("ZxdgToplevelV6.SetTitle@" + this);
 		}
 
 		public virtual void SetAppId(IntPtr client, IntPtr resource, string app_id)
 		{
-			//Console.WriteLine("SetAppId");
+			Console.WriteLine("ZxdgToplevelV6.SetAppId@" + this);
 		}
 
 		public virtual void ShowWindowMenu(IntPtr client, IntPtr resource, IntPtr seat, UInt32 serial, Int32 x, Int32 y)
 		{
-			//Console.WriteLine("ShowWindowMenu");
+			Console.WriteLine("ZxdgToplevelV6.ShowWindowMenu@" + this);
 		}
 
 		public virtual void Move(IntPtr client, IntPtr resource, IntPtr seat, UInt32 serial)
 		{
-			//Console.WriteLine("Move");
+			Console.WriteLine("ZxdgToplevelV6.Move@" + this);
 		}
 
 		public virtual void Resize(IntPtr client, IntPtr resource, IntPtr seat, UInt32 serial, UInt32 edges)
 		{
-			//Console.WriteLine("Resize");
+			Console.WriteLine("ZxdgToplevelV6.Resize@" + this);
 		}
 
 		public virtual void SetMaxSize(IntPtr client, IntPtr resource, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("SetMaxSize");
+			Console.WriteLine("ZxdgToplevelV6.SetMaxSize@" + this);
 		}
 
 		public virtual void SetMinSize(IntPtr client, IntPtr resource, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("SetMinSize");
+			Console.WriteLine("ZxdgToplevelV6.SetMinSize@" + this);
 		}
 
 		public virtual void SetMaximized(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("SetMaximized");
+			Console.WriteLine("ZxdgToplevelV6.SetMaximized@" + this);
 		}
 
 		public virtual void UnsetMaximized(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("UnsetMaximized");
+			Console.WriteLine("ZxdgToplevelV6.UnsetMaximized@" + this);
 		}
 
 		public virtual void SetFullscreen(IntPtr client, IntPtr resource, IntPtr output)
 		{
-			//Console.WriteLine("SetFullscreen");
+			Console.WriteLine("ZxdgToplevelV6.SetFullscreen@" + this);
 		}
 
 		public virtual void UnsetFullscreen(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("UnsetFullscreen");
+			Console.WriteLine("ZxdgToplevelV6.UnsetFullscreen@" + this);
 		}
 
 		public virtual void SetMinimized(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("SetMinimized");
+			Console.WriteLine("ZxdgToplevelV6.SetMinimized@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_configure(IntPtr resource, Int32 number, Int32 width, Int32 height, IntPtr states);
 		public void SendConfigure(Int32 width, Int32 height, IntPtr states) {
+			//Console.WriteLine("ZxdgToplevelV6.SendConfigure@" + this);
 			wl_resource_post_event_configure(this.resource, 0, width, height, states);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_close(IntPtr resource, Int32 number);
 		public void SendClose() {
+			//Console.WriteLine("ZxdgToplevelV6.SendClose@" + this);
 			wl_resource_post_event_close(this.resource, 1);
 		}
 	}
@@ -742,9 +778,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPopupV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -756,17 +793,24 @@ namespace XdgShellUnstableV6.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPopupV6Interface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "ZxdgPopupV6@" + resource;
+		}
+
 		~ZxdgPopupV6() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -788,23 +832,25 @@ namespace XdgShellUnstableV6.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("ZxdgPopupV6.Destroy@" + this);
 		}
 
 		public virtual void Grab(IntPtr client, IntPtr resource, IntPtr seat, UInt32 serial)
 		{
-			//Console.WriteLine("Grab");
+			Console.WriteLine("ZxdgPopupV6.Grab@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_configure(IntPtr resource, Int32 number, Int32 x, Int32 y, Int32 width, Int32 height);
 		public void SendConfigure(Int32 x, Int32 y, Int32 width, Int32 height) {
+			//Console.WriteLine("ZxdgPopupV6.SendConfigure@" + this);
 			wl_resource_post_event_configure(this.resource, 0, x, y, width, height);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_popup_done(IntPtr resource, Int32 number);
 		public void SendPopupDone() {
+			//Console.WriteLine("ZxdgPopupV6.SendPopupDone@" + this);
 			wl_resource_post_event_popup_done(this.resource, 1);
 		}
 	}

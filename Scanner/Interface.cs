@@ -19,12 +19,12 @@ namespace Wayland.Scanner {
 	    this.name = node.Attributes.GetNamedItem("name").Value;
 	    this.version = node.Attributes.GetNamedItem("version").Value;
 	    foreach(XmlNode requestNode in node.SelectNodes("request")) {
-		Request r = new Request(requestNode);
+		Request r = new Request(requestNode, name);
 		requests.Add(r);
 	    }
 	    int eventNo = 0;
 	    foreach(XmlNode eventNode in node.SelectNodes("event")) {
-		Event e = new Event(eventNode, eventNo);
+		Event e = new Event(eventNode, eventNo, name);
 		events.Add(e);
 		eventNo++;
 	    }
@@ -106,8 +106,9 @@ namespace Wayland.Scanner {
 		"\t\t\tthis.client = Display.GetClient(clientPtr);\n" +
 		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
 		"managedImplementation = this.InitializeImplementation();" +
+		"\n\t\t\tthis.deleteFunction = new DeleteFunction(this.Delete);" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
-	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);" +
+	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);" +
 	    //"\n\t\t\tClient c = Display.GetClient(client);" +
 	    "\n\t\t\tif (addToClient)" +
 		"\n\t\t\t{" +
@@ -119,14 +120,19 @@ namespace Wayland.Scanner {
 		"\t\t\tthis.client = Display.GetClient(clientPtr);\n" +
 		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
 		"managedImplementation = this.InitializeImplementation();" +
+		"\n\t\t\tthis.deleteFunction = new DeleteFunction(this.Delete);" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
-	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);" +
+	    "\n\t\t\tResource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);" +
 	    "\n\t\t\tif (addToClient)" +
 		"\n\t\t\t{" +
 	    "\n\t\t\t\tclient.resources.Add(this);" + 
 		"\n\t\t\t}\n" +
 		"\t\t}\n" +
+		"\n\t\tpublic override string ToString() \n\t\t{" +
+		"\n\t\t\treturn \"" + Scanner.TitleCase(name) + "@\" + resource;" +
+		"\n\t\t}\n" +
 		"\n\t\t~" + Scanner.TitleCase(name) +  "() \n\t\t{" +
+		"\n\t\t\t//Console.WriteLine(\"Resource \" + this + \" is being collected\");" + 
 		"\n\t\t\tMarshal.FreeHGlobal(this.implementation);" +
 		"\n\t\t}\n" +
 //		"\n" + String.Join("\n", requests.Select(i => i.ToDelegate())) +

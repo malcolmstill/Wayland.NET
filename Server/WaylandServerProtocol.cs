@@ -463,9 +463,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDisplayInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -477,17 +478,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDisplayInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlDisplay@" + resource;
+		}
+
 		~WlDisplay() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -509,23 +517,25 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Sync(IntPtr client, IntPtr resource, UInt32 callback)
 		{
-			//Console.WriteLine("Sync");
+			Console.WriteLine("WlDisplay.Sync@" + this);
 		}
 
 		public virtual void GetRegistry(IntPtr client, IntPtr resource, UInt32 registry)
 		{
-			//Console.WriteLine("GetRegistry");
+			Console.WriteLine("WlDisplay.GetRegistry@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_error(IntPtr resource, Int32 number, IntPtr object_id, UInt32 code, string message);
 		public void SendError(IntPtr object_id, UInt32 code, string message) {
+			//Console.WriteLine("WlDisplay.SendError@" + this);
 			wl_resource_post_event_error(this.resource, 0, object_id, code, message);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_delete_id(IntPtr resource, Int32 number, UInt32 id);
 		public void SendDeleteId(UInt32 id) {
+			//Console.WriteLine("WlDisplay.SendDeleteId@" + this);
 			wl_resource_post_event_delete_id(this.resource, 1, id);
 		}
 	}
@@ -554,9 +564,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlRegistryInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -568,17 +579,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlRegistryInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlRegistry@" + resource;
+		}
+
 		~WlRegistry() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -595,18 +613,20 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Bind(IntPtr client, IntPtr resource, UInt32 name, UInt32 id)
 		{
-			//Console.WriteLine("Bind");
+			Console.WriteLine("WlRegistry.Bind@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_global(IntPtr resource, Int32 number, UInt32 name, string interfacePtr, UInt32 version);
 		public void SendGlobal(UInt32 name, string interfacePtr, UInt32 version) {
+			//Console.WriteLine("WlRegistry.SendGlobal@" + this);
 			wl_resource_post_event_global(this.resource, 0, name, interfacePtr, version);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_global_remove(IntPtr resource, Int32 number, UInt32 name);
 		public void SendGlobalRemove(UInt32 name) {
+			//Console.WriteLine("WlRegistry.SendGlobalRemove@" + this);
 			wl_resource_post_event_global_remove(this.resource, 1, name);
 		}
 	}
@@ -635,9 +655,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlCallbackInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -649,17 +670,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlCallbackInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlCallback@" + resource;
+		}
+
 		~WlCallback() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -675,6 +703,7 @@ namespace Wayland.Server.Protocol
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_done(IntPtr resource, Int32 number, UInt32 callback_data);
 		public void SendDone(UInt32 callback_data) {
+			//Console.WriteLine("WlCallback.SendDone@" + this);
 			wl_resource_post_event_done(this.resource, 0, callback_data);
 		}
 	}
@@ -704,9 +733,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlCompositorInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -718,17 +748,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlCompositorInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlCompositor@" + resource;
+		}
+
 		~WlCompositor() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -750,12 +787,12 @@ namespace Wayland.Server.Protocol
 
 		public virtual void CreateSurface(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("CreateSurface");
+			Console.WriteLine("WlCompositor.CreateSurface@" + this);
 		}
 
 		public virtual void CreateRegion(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("CreateRegion");
+			Console.WriteLine("WlCompositor.CreateRegion@" + this);
 		}
 
 	}
@@ -786,9 +823,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShmPoolInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -800,17 +838,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShmPoolInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlShmPool@" + resource;
+		}
+
 		~WlShmPool() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -837,17 +882,17 @@ namespace Wayland.Server.Protocol
 
 		public virtual void CreateBuffer(IntPtr client, IntPtr resource, UInt32 id, Int32 offset, Int32 width, Int32 height, Int32 stride, UInt32 format)
 		{
-			//Console.WriteLine("CreateBuffer");
+			Console.WriteLine("WlShmPool.CreateBuffer@" + this);
 		}
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlShmPool.Destroy@" + this);
 		}
 
 		public virtual void Resize(IntPtr client, IntPtr resource, Int32 size)
 		{
-			//Console.WriteLine("Resize");
+			Console.WriteLine("WlShmPool.Resize@" + this);
 		}
 
 	}
@@ -876,9 +921,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShmInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -890,17 +936,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShmInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlShm@" + resource;
+		}
+
 		~WlShm() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -917,12 +970,13 @@ namespace Wayland.Server.Protocol
 
 		public virtual void CreatePool(IntPtr client, IntPtr resource, UInt32 id, Int32 fd, Int32 size)
 		{
-			//Console.WriteLine("CreatePool");
+			Console.WriteLine("WlShm.CreatePool@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_format(IntPtr resource, Int32 number, UInt32 format);
 		public void SendFormat(UInt32 format) {
+			//Console.WriteLine("WlShm.SendFormat@" + this);
 			wl_resource_post_event_format(this.resource, 0, format);
 		}
 	}
@@ -951,9 +1005,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlBufferInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -965,17 +1020,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlBufferInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlBuffer@" + resource;
+		}
+
 		~WlBuffer() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -992,12 +1054,13 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlBuffer.Destroy@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_release(IntPtr resource, Int32 number);
 		public void SendRelease() {
+			//Console.WriteLine("WlBuffer.SendRelease@" + this);
 			wl_resource_post_event_release(this.resource, 0);
 		}
 	}
@@ -1030,9 +1093,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataOfferInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1044,17 +1108,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataOfferInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlDataOffer@" + resource;
+		}
+
 		~WlDataOffer() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1091,44 +1162,47 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Accept(IntPtr client, IntPtr resource, UInt32 serial, string mime_type)
 		{
-			//Console.WriteLine("Accept");
+			Console.WriteLine("WlDataOffer.Accept@" + this);
 		}
 
 		public virtual void Receive(IntPtr client, IntPtr resource, string mime_type, Int32 fd)
 		{
-			//Console.WriteLine("Receive");
+			Console.WriteLine("WlDataOffer.Receive@" + this);
 		}
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlDataOffer.Destroy@" + this);
 		}
 
 		public virtual void Finish(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Finish");
+			Console.WriteLine("WlDataOffer.Finish@" + this);
 		}
 
 		public virtual void SetActions(IntPtr client, IntPtr resource, UInt32 dnd_actions, UInt32 preferred_action)
 		{
-			//Console.WriteLine("SetActions");
+			Console.WriteLine("WlDataOffer.SetActions@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_offer(IntPtr resource, Int32 number, string mime_type);
 		public void SendOffer(string mime_type) {
+			//Console.WriteLine("WlDataOffer.SendOffer@" + this);
 			wl_resource_post_event_offer(this.resource, 0, mime_type);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_source_actions(IntPtr resource, Int32 number, UInt32 source_actions);
 		public void SendSourceActions(UInt32 source_actions) {
+			//Console.WriteLine("WlDataOffer.SendSourceActions@" + this);
 			wl_resource_post_event_source_actions(this.resource, 1, source_actions);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_action(IntPtr resource, Int32 number, UInt32 dnd_action);
 		public void SendAction(UInt32 dnd_action) {
+			//Console.WriteLine("WlDataOffer.SendAction@" + this);
 			wl_resource_post_event_action(this.resource, 2, dnd_action);
 		}
 	}
@@ -1159,9 +1233,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataSourceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1173,17 +1248,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataSourceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlDataSource@" + resource;
+		}
+
 		~WlDataSource() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1210,52 +1292,58 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Offer(IntPtr client, IntPtr resource, string mime_type)
 		{
-			//Console.WriteLine("Offer");
+			Console.WriteLine("WlDataSource.Offer@" + this);
 		}
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlDataSource.Destroy@" + this);
 		}
 
 		public virtual void SetActions(IntPtr client, IntPtr resource, UInt32 dnd_actions)
 		{
-			//Console.WriteLine("SetActions");
+			Console.WriteLine("WlDataSource.SetActions@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_target(IntPtr resource, Int32 number, string mime_type);
 		public void SendTarget(string mime_type) {
+			//Console.WriteLine("WlDataSource.SendTarget@" + this);
 			wl_resource_post_event_target(this.resource, 0, mime_type);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_send(IntPtr resource, Int32 number, string mime_type, Int32 fd);
 		public void SendSend(string mime_type, Int32 fd) {
+			//Console.WriteLine("WlDataSource.SendSend@" + this);
 			wl_resource_post_event_send(this.resource, 1, mime_type, fd);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_cancelled(IntPtr resource, Int32 number);
 		public void SendCancelled() {
+			//Console.WriteLine("WlDataSource.SendCancelled@" + this);
 			wl_resource_post_event_cancelled(this.resource, 2);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_dnd_drop_performed(IntPtr resource, Int32 number);
 		public void SendDndDropPerformed() {
+			//Console.WriteLine("WlDataSource.SendDndDropPerformed@" + this);
 			wl_resource_post_event_dnd_drop_performed(this.resource, 3);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_dnd_finished(IntPtr resource, Int32 number);
 		public void SendDndFinished() {
+			//Console.WriteLine("WlDataSource.SendDndFinished@" + this);
 			wl_resource_post_event_dnd_finished(this.resource, 4);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_action(IntPtr resource, Int32 number, UInt32 dnd_action);
 		public void SendAction(UInt32 dnd_action) {
+			//Console.WriteLine("WlDataSource.SendAction@" + this);
 			wl_resource_post_event_action(this.resource, 5, dnd_action);
 		}
 	}
@@ -1286,9 +1374,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataDeviceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1300,17 +1389,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataDeviceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlDataDevice@" + resource;
+		}
+
 		~WlDataDevice() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1337,52 +1433,58 @@ namespace Wayland.Server.Protocol
 
 		public virtual void StartDrag(IntPtr client, IntPtr resource, IntPtr source, IntPtr origin, IntPtr icon, UInt32 serial)
 		{
-			//Console.WriteLine("StartDrag");
+			Console.WriteLine("WlDataDevice.StartDrag@" + this);
 		}
 
 		public virtual void SetSelection(IntPtr client, IntPtr resource, IntPtr source, UInt32 serial)
 		{
-			//Console.WriteLine("SetSelection");
+			Console.WriteLine("WlDataDevice.SetSelection@" + this);
 		}
 
 		public virtual void Release(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Release");
+			Console.WriteLine("WlDataDevice.Release@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_data_offer(IntPtr resource, Int32 number, UInt32 id);
 		public void SendDataOffer(UInt32 id) {
+			//Console.WriteLine("WlDataDevice.SendDataOffer@" + this);
 			wl_resource_post_event_data_offer(this.resource, 0, id);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_enter(IntPtr resource, Int32 number, UInt32 serial, IntPtr surface, Int32 x, Int32 y, IntPtr id);
 		public void SendEnter(UInt32 serial, IntPtr surface, Int32 x, Int32 y, IntPtr id) {
+			//Console.WriteLine("WlDataDevice.SendEnter@" + this);
 			wl_resource_post_event_enter(this.resource, 1, serial, surface, x, y, id);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_leave(IntPtr resource, Int32 number);
 		public void SendLeave() {
+			//Console.WriteLine("WlDataDevice.SendLeave@" + this);
 			wl_resource_post_event_leave(this.resource, 2);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_motion(IntPtr resource, Int32 number, UInt32 time, Int32 x, Int32 y);
 		public void SendMotion(UInt32 time, Int32 x, Int32 y) {
+			//Console.WriteLine("WlDataDevice.SendMotion@" + this);
 			wl_resource_post_event_motion(this.resource, 3, time, x, y);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_drop(IntPtr resource, Int32 number);
 		public void SendDrop() {
+			//Console.WriteLine("WlDataDevice.SendDrop@" + this);
 			wl_resource_post_event_drop(this.resource, 4);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_selection(IntPtr resource, Int32 number, IntPtr id);
 		public void SendSelection(IntPtr id) {
+			//Console.WriteLine("WlDataDevice.SendSelection@" + this);
 			wl_resource_post_event_selection(this.resource, 5, id);
 		}
 	}
@@ -1412,9 +1514,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataDeviceManagerInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1426,17 +1529,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlDataDeviceManagerInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlDataDeviceManager@" + resource;
+		}
+
 		~WlDataDeviceManager() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1458,12 +1568,12 @@ namespace Wayland.Server.Protocol
 
 		public virtual void CreateDataSource(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("CreateDataSource");
+			Console.WriteLine("WlDataDeviceManager.CreateDataSource@" + this);
 		}
 
 		public virtual void GetDataDevice(IntPtr client, IntPtr resource, UInt32 id, IntPtr seat)
 		{
-			//Console.WriteLine("GetDataDevice");
+			Console.WriteLine("WlDataDeviceManager.GetDataDevice@" + this);
 		}
 
 	}
@@ -1492,9 +1602,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShellInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1506,17 +1617,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShellInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlShell@" + resource;
+		}
+
 		~WlShell() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1533,7 +1651,7 @@ namespace Wayland.Server.Protocol
 
 		public virtual void GetShellSurface(IntPtr client, IntPtr resource, UInt32 id, IntPtr surface)
 		{
-			//Console.WriteLine("GetShellSurface");
+			Console.WriteLine("WlShell.GetShellSurface@" + this);
 		}
 
 	}
@@ -1571,9 +1689,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShellSurfaceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1585,17 +1704,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlShellSurfaceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlShellSurface@" + resource;
+		}
+
 		~WlShellSurface() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1657,69 +1783,72 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Pong(IntPtr client, IntPtr resource, UInt32 serial)
 		{
-			//Console.WriteLine("Pong");
+			Console.WriteLine("WlShellSurface.Pong@" + this);
 		}
 
 		public virtual void Move(IntPtr client, IntPtr resource, IntPtr seat, UInt32 serial)
 		{
-			//Console.WriteLine("Move");
+			Console.WriteLine("WlShellSurface.Move@" + this);
 		}
 
 		public virtual void Resize(IntPtr client, IntPtr resource, IntPtr seat, UInt32 serial, UInt32 edges)
 		{
-			//Console.WriteLine("Resize");
+			Console.WriteLine("WlShellSurface.Resize@" + this);
 		}
 
 		public virtual void SetToplevel(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("SetToplevel");
+			Console.WriteLine("WlShellSurface.SetToplevel@" + this);
 		}
 
 		public virtual void SetTransient(IntPtr client, IntPtr resource, IntPtr parent, Int32 x, Int32 y, UInt32 flags)
 		{
-			//Console.WriteLine("SetTransient");
+			Console.WriteLine("WlShellSurface.SetTransient@" + this);
 		}
 
 		public virtual void SetFullscreen(IntPtr client, IntPtr resource, UInt32 method, UInt32 framerate, IntPtr output)
 		{
-			//Console.WriteLine("SetFullscreen");
+			Console.WriteLine("WlShellSurface.SetFullscreen@" + this);
 		}
 
 		public virtual void SetPopup(IntPtr client, IntPtr resource, IntPtr seat, UInt32 serial, IntPtr parent, Int32 x, Int32 y, UInt32 flags)
 		{
-			//Console.WriteLine("SetPopup");
+			Console.WriteLine("WlShellSurface.SetPopup@" + this);
 		}
 
 		public virtual void SetMaximized(IntPtr client, IntPtr resource, IntPtr output)
 		{
-			//Console.WriteLine("SetMaximized");
+			Console.WriteLine("WlShellSurface.SetMaximized@" + this);
 		}
 
 		public virtual void SetTitle(IntPtr client, IntPtr resource, string title)
 		{
-			//Console.WriteLine("SetTitle");
+			Console.WriteLine("WlShellSurface.SetTitle@" + this);
 		}
 
 		public virtual void SetClass(IntPtr client, IntPtr resource, string class_)
 		{
-			//Console.WriteLine("SetClass");
+			Console.WriteLine("WlShellSurface.SetClass@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_ping(IntPtr resource, Int32 number, UInt32 serial);
 		public void SendPing(UInt32 serial) {
+			//Console.WriteLine("WlShellSurface.SendPing@" + this);
 			wl_resource_post_event_ping(this.resource, 0, serial);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_configure(IntPtr resource, Int32 number, UInt32 edges, Int32 width, Int32 height);
 		public void SendConfigure(UInt32 edges, Int32 width, Int32 height) {
+			//Console.WriteLine("WlShellSurface.SendConfigure@" + this);
 			wl_resource_post_event_configure(this.resource, 1, edges, width, height);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_popup_done(IntPtr resource, Int32 number);
 		public void SendPopupDone() {
+			//Console.WriteLine("WlShellSurface.SendPopupDone@" + this);
 			wl_resource_post_event_popup_done(this.resource, 2);
 		}
 	}
@@ -1757,9 +1886,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSurfaceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1771,17 +1901,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSurfaceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlSurface@" + resource;
+		}
+
 		~WlSurface() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1843,63 +1980,65 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlSurface.Destroy@" + this);
 		}
 
 		public virtual void Attach(IntPtr client, IntPtr resource, IntPtr buffer, Int32 x, Int32 y)
 		{
-			//Console.WriteLine("Attach");
+			Console.WriteLine("WlSurface.Attach@" + this);
 		}
 
 		public virtual void Damage(IntPtr client, IntPtr resource, Int32 x, Int32 y, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("Damage");
+			Console.WriteLine("WlSurface.Damage@" + this);
 		}
 
 		public virtual void Frame(IntPtr client, IntPtr resource, UInt32 callback)
 		{
-			//Console.WriteLine("Frame");
+			Console.WriteLine("WlSurface.Frame@" + this);
 		}
 
 		public virtual void SetOpaqueRegion(IntPtr client, IntPtr resource, IntPtr region)
 		{
-			//Console.WriteLine("SetOpaqueRegion");
+			Console.WriteLine("WlSurface.SetOpaqueRegion@" + this);
 		}
 
 		public virtual void SetInputRegion(IntPtr client, IntPtr resource, IntPtr region)
 		{
-			//Console.WriteLine("SetInputRegion");
+			Console.WriteLine("WlSurface.SetInputRegion@" + this);
 		}
 
 		public virtual void Commit(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Commit");
+			Console.WriteLine("WlSurface.Commit@" + this);
 		}
 
 		public virtual void SetBufferTransform(IntPtr client, IntPtr resource, Int32 transform)
 		{
-			//Console.WriteLine("SetBufferTransform");
+			Console.WriteLine("WlSurface.SetBufferTransform@" + this);
 		}
 
 		public virtual void SetBufferScale(IntPtr client, IntPtr resource, Int32 scale)
 		{
-			//Console.WriteLine("SetBufferScale");
+			Console.WriteLine("WlSurface.SetBufferScale@" + this);
 		}
 
 		public virtual void DamageBuffer(IntPtr client, IntPtr resource, Int32 x, Int32 y, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("DamageBuffer");
+			Console.WriteLine("WlSurface.DamageBuffer@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_enter(IntPtr resource, Int32 number, IntPtr output);
 		public void SendEnter(IntPtr output) {
+			//Console.WriteLine("WlSurface.SendEnter@" + this);
 			wl_resource_post_event_enter(this.resource, 0, output);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_leave(IntPtr resource, Int32 number, IntPtr output);
 		public void SendLeave(IntPtr output) {
+			//Console.WriteLine("WlSurface.SendLeave@" + this);
 			wl_resource_post_event_leave(this.resource, 1, output);
 		}
 	}
@@ -1931,9 +2070,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSeatInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -1945,17 +2085,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSeatInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlSeat@" + resource;
+		}
+
 		~WlSeat() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -1987,33 +2134,35 @@ namespace Wayland.Server.Protocol
 
 		public virtual void GetPointer(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("GetPointer");
+			Console.WriteLine("WlSeat.GetPointer@" + this);
 		}
 
 		public virtual void GetKeyboard(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("GetKeyboard");
+			Console.WriteLine("WlSeat.GetKeyboard@" + this);
 		}
 
 		public virtual void GetTouch(IntPtr client, IntPtr resource, UInt32 id)
 		{
-			//Console.WriteLine("GetTouch");
+			Console.WriteLine("WlSeat.GetTouch@" + this);
 		}
 
 		public virtual void Release(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Release");
+			Console.WriteLine("WlSeat.Release@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_capabilities(IntPtr resource, Int32 number, UInt32 capabilities);
 		public void SendCapabilities(UInt32 capabilities) {
+			//Console.WriteLine("WlSeat.SendCapabilities@" + this);
 			wl_resource_post_event_capabilities(this.resource, 0, capabilities);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_name(IntPtr resource, Int32 number, string name);
 		public void SendName(string name) {
+			//Console.WriteLine("WlSeat.SendName@" + this);
 			wl_resource_post_event_name(this.resource, 1, name);
 		}
 	}
@@ -2043,9 +2192,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlPointerInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -2057,17 +2207,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlPointerInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlPointer@" + resource;
+		}
+
 		~WlPointer() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -2089,65 +2246,74 @@ namespace Wayland.Server.Protocol
 
 		public virtual void SetCursor(IntPtr client, IntPtr resource, UInt32 serial, IntPtr surface, Int32 hotspot_x, Int32 hotspot_y)
 		{
-			//Console.WriteLine("SetCursor");
+			Console.WriteLine("WlPointer.SetCursor@" + this);
 		}
 
 		public virtual void Release(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Release");
+			Console.WriteLine("WlPointer.Release@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_enter(IntPtr resource, Int32 number, UInt32 serial, IntPtr surface, Int32 surface_x, Int32 surface_y);
 		public void SendEnter(UInt32 serial, IntPtr surface, Int32 surface_x, Int32 surface_y) {
+			//Console.WriteLine("WlPointer.SendEnter@" + this);
 			wl_resource_post_event_enter(this.resource, 0, serial, surface, surface_x, surface_y);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_leave(IntPtr resource, Int32 number, UInt32 serial, IntPtr surface);
 		public void SendLeave(UInt32 serial, IntPtr surface) {
+			//Console.WriteLine("WlPointer.SendLeave@" + this);
 			wl_resource_post_event_leave(this.resource, 1, serial, surface);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_motion(IntPtr resource, Int32 number, UInt32 time, Int32 surface_x, Int32 surface_y);
 		public void SendMotion(UInt32 time, Int32 surface_x, Int32 surface_y) {
+			//Console.WriteLine("WlPointer.SendMotion@" + this);
 			wl_resource_post_event_motion(this.resource, 2, time, surface_x, surface_y);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_button(IntPtr resource, Int32 number, UInt32 serial, UInt32 time, UInt32 button, UInt32 state);
 		public void SendButton(UInt32 serial, UInt32 time, UInt32 button, UInt32 state) {
+			//Console.WriteLine("WlPointer.SendButton@" + this);
 			wl_resource_post_event_button(this.resource, 3, serial, time, button, state);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_axis(IntPtr resource, Int32 number, UInt32 time, UInt32 axis, Int32 value);
 		public void SendAxis(UInt32 time, UInt32 axis, Int32 value) {
+			//Console.WriteLine("WlPointer.SendAxis@" + this);
 			wl_resource_post_event_axis(this.resource, 4, time, axis, value);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_frame(IntPtr resource, Int32 number);
 		public void SendFrame() {
+			//Console.WriteLine("WlPointer.SendFrame@" + this);
 			wl_resource_post_event_frame(this.resource, 5);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_axis_source(IntPtr resource, Int32 number, UInt32 axis_source);
 		public void SendAxisSource(UInt32 axis_source) {
+			//Console.WriteLine("WlPointer.SendAxisSource@" + this);
 			wl_resource_post_event_axis_source(this.resource, 6, axis_source);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_axis_stop(IntPtr resource, Int32 number, UInt32 time, UInt32 axis);
 		public void SendAxisStop(UInt32 time, UInt32 axis) {
+			//Console.WriteLine("WlPointer.SendAxisStop@" + this);
 			wl_resource_post_event_axis_stop(this.resource, 7, time, axis);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_axis_discrete(IntPtr resource, Int32 number, UInt32 axis, Int32 discrete);
 		public void SendAxisDiscrete(UInt32 axis, Int32 discrete) {
+			//Console.WriteLine("WlPointer.SendAxisDiscrete@" + this);
 			wl_resource_post_event_axis_discrete(this.resource, 8, axis, discrete);
 		}
 	}
@@ -2176,9 +2342,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlKeyboardInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -2190,17 +2357,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlKeyboardInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlKeyboard@" + resource;
+		}
+
 		~WlKeyboard() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -2217,42 +2391,48 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Release(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Release");
+			Console.WriteLine("WlKeyboard.Release@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_keymap(IntPtr resource, Int32 number, UInt32 format, Int32 fd, UInt32 size);
 		public void SendKeymap(UInt32 format, Int32 fd, UInt32 size) {
+			//Console.WriteLine("WlKeyboard.SendKeymap@" + this);
 			wl_resource_post_event_keymap(this.resource, 0, format, fd, size);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_enter(IntPtr resource, Int32 number, UInt32 serial, IntPtr surface, IntPtr keys);
 		public void SendEnter(UInt32 serial, IntPtr surface, IntPtr keys) {
+			//Console.WriteLine("WlKeyboard.SendEnter@" + this);
 			wl_resource_post_event_enter(this.resource, 1, serial, surface, keys);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_leave(IntPtr resource, Int32 number, UInt32 serial, IntPtr surface);
 		public void SendLeave(UInt32 serial, IntPtr surface) {
+			//Console.WriteLine("WlKeyboard.SendLeave@" + this);
 			wl_resource_post_event_leave(this.resource, 2, serial, surface);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_key(IntPtr resource, Int32 number, UInt32 serial, UInt32 time, UInt32 key, UInt32 state);
 		public void SendKey(UInt32 serial, UInt32 time, UInt32 key, UInt32 state) {
+			//Console.WriteLine("WlKeyboard.SendKey@" + this);
 			wl_resource_post_event_key(this.resource, 3, serial, time, key, state);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_modifiers(IntPtr resource, Int32 number, UInt32 serial, UInt32 mods_depressed, UInt32 mods_latched, UInt32 mods_locked, UInt32 group);
 		public void SendModifiers(UInt32 serial, UInt32 mods_depressed, UInt32 mods_latched, UInt32 mods_locked, UInt32 group) {
+			//Console.WriteLine("WlKeyboard.SendModifiers@" + this);
 			wl_resource_post_event_modifiers(this.resource, 4, serial, mods_depressed, mods_latched, mods_locked, group);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_repeat_info(IntPtr resource, Int32 number, Int32 rate, Int32 delay);
 		public void SendRepeatInfo(Int32 rate, Int32 delay) {
+			//Console.WriteLine("WlKeyboard.SendRepeatInfo@" + this);
 			wl_resource_post_event_repeat_info(this.resource, 5, rate, delay);
 		}
 	}
@@ -2281,9 +2461,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlTouchInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -2295,17 +2476,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlTouchInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlTouch@" + resource;
+		}
+
 		~WlTouch() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -2322,36 +2510,41 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Release(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Release");
+			Console.WriteLine("WlTouch.Release@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_down(IntPtr resource, Int32 number, UInt32 serial, UInt32 time, IntPtr surface, Int32 id, Int32 x, Int32 y);
 		public void SendDown(UInt32 serial, UInt32 time, IntPtr surface, Int32 id, Int32 x, Int32 y) {
+			//Console.WriteLine("WlTouch.SendDown@" + this);
 			wl_resource_post_event_down(this.resource, 0, serial, time, surface, id, x, y);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_up(IntPtr resource, Int32 number, UInt32 serial, UInt32 time, Int32 id);
 		public void SendUp(UInt32 serial, UInt32 time, Int32 id) {
+			//Console.WriteLine("WlTouch.SendUp@" + this);
 			wl_resource_post_event_up(this.resource, 1, serial, time, id);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_motion(IntPtr resource, Int32 number, UInt32 time, Int32 id, Int32 x, Int32 y);
 		public void SendMotion(UInt32 time, Int32 id, Int32 x, Int32 y) {
+			//Console.WriteLine("WlTouch.SendMotion@" + this);
 			wl_resource_post_event_motion(this.resource, 2, time, id, x, y);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_frame(IntPtr resource, Int32 number);
 		public void SendFrame() {
+			//Console.WriteLine("WlTouch.SendFrame@" + this);
 			wl_resource_post_event_frame(this.resource, 3);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_cancel(IntPtr resource, Int32 number);
 		public void SendCancel() {
+			//Console.WriteLine("WlTouch.SendCancel@" + this);
 			wl_resource_post_event_cancel(this.resource, 4);
 		}
 	}
@@ -2380,9 +2573,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlOutputInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -2394,17 +2588,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlOutputInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlOutput@" + resource;
+		}
+
 		~WlOutput() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -2421,30 +2622,34 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Release(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Release");
+			Console.WriteLine("WlOutput.Release@" + this);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_geometry(IntPtr resource, Int32 number, Int32 x, Int32 y, Int32 physical_width, Int32 physical_height, Int32 subpixel, string make, string model, Int32 transform);
 		public void SendGeometry(Int32 x, Int32 y, Int32 physical_width, Int32 physical_height, Int32 subpixel, string make, string model, Int32 transform) {
+			//Console.WriteLine("WlOutput.SendGeometry@" + this);
 			wl_resource_post_event_geometry(this.resource, 0, x, y, physical_width, physical_height, subpixel, make, model, transform);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_mode(IntPtr resource, Int32 number, UInt32 flags, Int32 width, Int32 height, Int32 refresh);
 		public void SendMode(UInt32 flags, Int32 width, Int32 height, Int32 refresh) {
+			//Console.WriteLine("WlOutput.SendMode@" + this);
 			wl_resource_post_event_mode(this.resource, 1, flags, width, height, refresh);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_done(IntPtr resource, Int32 number);
 		public void SendDone() {
+			//Console.WriteLine("WlOutput.SendDone@" + this);
 			wl_resource_post_event_done(this.resource, 2);
 		}
 
 		[DllImport("libwayland-server.so", EntryPoint="wl_resource_post_event")]
 		private static extern void wl_resource_post_event_scale(IntPtr resource, Int32 number, Int32 factor);
 		public void SendScale(Int32 factor) {
+			//Console.WriteLine("WlOutput.SendScale@" + this);
 			wl_resource_post_event_scale(this.resource, 3, factor);
 		}
 	}
@@ -2475,9 +2680,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlRegionInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -2489,17 +2695,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlRegionInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlRegion@" + resource;
+		}
+
 		~WlRegion() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -2526,17 +2739,17 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlRegion.Destroy@" + this);
 		}
 
 		public virtual void Add(IntPtr client, IntPtr resource, Int32 x, Int32 y, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("Add");
+			Console.WriteLine("WlRegion.Add@" + this);
 		}
 
 		public virtual void Subtract(IntPtr client, IntPtr resource, Int32 x, Int32 y, Int32 width, Int32 height)
 		{
-			//Console.WriteLine("Subtract");
+			Console.WriteLine("WlRegion.Subtract@" + this);
 		}
 
 	}
@@ -2566,9 +2779,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSubcompositorInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -2580,17 +2794,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSubcompositorInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlSubcompositor@" + resource;
+		}
+
 		~WlSubcompositor() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -2612,12 +2833,12 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlSubcompositor.Destroy@" + this);
 		}
 
 		public virtual void GetSubsurface(IntPtr client, IntPtr resource, UInt32 id, IntPtr surface, IntPtr parent)
 		{
-			//Console.WriteLine("GetSubsurface");
+			Console.WriteLine("WlSubcompositor.GetSubsurface@" + this);
 		}
 
 	}
@@ -2651,9 +2872,10 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSubsurfaceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, resource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, resource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
@@ -2665,17 +2887,24 @@ namespace Wayland.Server.Protocol
 			this.client = Display.GetClient(clientPtr);
 			this.resource = Resource.Create(clientPtr, WaylandInterfaces.wlSubsurfaceInterface.ifaceNative, 1, id);
 			managedImplementation = this.InitializeImplementation();
+			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
 			Marshal.StructureToPtr(managedImplementation, this.implementation, false);
-			Resource.SetImplementation(resource, this.implementation, otherResource, IntPtr.Zero);
+			Resource.SetImplementation(resource, this.implementation, otherResource, this.deleteFunction);
 			if (addToClient)
 			{
 				client.resources.Add(this);
 			}
 		}
 
+		public override string ToString() 
+		{
+			return "WlSubsurface@" + resource;
+		}
+
 		~WlSubsurface() 
 		{
+			//Console.WriteLine("Resource " + this + " is being collected");
 			Marshal.FreeHGlobal(this.implementation);
 		}
 
@@ -2717,32 +2946,32 @@ namespace Wayland.Server.Protocol
 
 		public virtual void Destroy(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("Destroy");
+			Console.WriteLine("WlSubsurface.Destroy@" + this);
 		}
 
 		public virtual void SetPosition(IntPtr client, IntPtr resource, Int32 x, Int32 y)
 		{
-			//Console.WriteLine("SetPosition");
+			Console.WriteLine("WlSubsurface.SetPosition@" + this);
 		}
 
 		public virtual void PlaceAbove(IntPtr client, IntPtr resource, IntPtr sibling)
 		{
-			//Console.WriteLine("PlaceAbove");
+			Console.WriteLine("WlSubsurface.PlaceAbove@" + this);
 		}
 
 		public virtual void PlaceBelow(IntPtr client, IntPtr resource, IntPtr sibling)
 		{
-			//Console.WriteLine("PlaceBelow");
+			Console.WriteLine("WlSubsurface.PlaceBelow@" + this);
 		}
 
 		public virtual void SetSync(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("SetSync");
+			Console.WriteLine("WlSubsurface.SetSync@" + this);
 		}
 
 		public virtual void SetDesync(IntPtr client, IntPtr resource)
 		{
-			//Console.WriteLine("SetDesync");
+			Console.WriteLine("WlSubsurface.SetDesync@" + this);
 		}
 
 	}
