@@ -158,5 +158,10 @@ namespace Wayland.Server
 		{
 			return wl_array_add(array, size);
 		}
+
+		public void Set(IntPtr loc, int value)
+		{
+			Marshal.WriteInt32(loc, 0, value);
+		}
 	}
 }
