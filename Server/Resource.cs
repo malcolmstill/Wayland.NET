@@ -10,23 +10,29 @@ namespace Wayland.Server
 		//public IntPtr client { get; set; } = IntPtr.Zero;
 		public Client client = null;
 		public IntPtr implementation { get; set; } = IntPtr.Zero;
+		public DeleteFunction deleteFunction;
+
+		public delegate void DeleteFunction(IntPtr resource); 
 
 		public override string ToString()
 		{
 			return "Resource@" + resource;
 		}
 
-		//const string lib = "/usr/local/lib/libwayland-server.so";
+		/*
+		~Resource()
+		{
+			Console.WriteLine("Resource " + this + " is being collected");
+		}
+		*/
+
 		const string lib = "libwayland-server.so";
-		
-		// [DllImport(lib, EntryPoint="wl_resouce_post_event", CallingConvention = CallingConvention.Cdecl)]
-		// public static extern void PostEvent(IntPtr resource, UInt32 opcode, __arglist);
 
 		[DllImport(lib, EntryPoint="wl_resource_create")]
 		public static extern IntPtr Create(IntPtr client, IntPtr _interface, Int32 version, UInt32 id);
 
 		[DllImport(lib, EntryPoint="wl_resource_set_implementation")]
-		public static extern void SetImplementation(IntPtr resource, IntPtr implementation, IntPtr data, IntPtr destroy);
+		public static extern void SetImplementation(IntPtr resource, IntPtr implementation, IntPtr data, DeleteFunction destroy); //DeleteFunction destroy);
 
 		[DllImport(lib, EntryPoint="wl_resource_get_id")]
 		private static extern UInt32 wl_resource_get_id(IntPtr resource);
@@ -45,14 +51,19 @@ namespace Wayland.Server
 			return GetVersion(resource);
 		}
 
+		public virtual void Delete(IntPtr resource)
+		{
+			Console.WriteLine("Delete function not overridden " + this);
+		}
+
 		[DllImport(lib, EntryPoint="wl_resource_destroy")]
 		private static extern void wl_resource_destroy(IntPtr resource);
 		public void Remove()
 		{
-			//Client c = Display.GetClient(client);
+			// Console.WriteLine("Calling Resource.Remove for " + this);
 			if (client != null)
-			{
-				client.RemoveResource(resource);	
+			{	
+				client.RemoveResource(resource);
 				wl_resource_destroy(resource);
 			}
 		}
