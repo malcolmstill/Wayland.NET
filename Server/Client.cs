@@ -9,7 +9,7 @@ namespace Wayland.Server
     {
 		public readonly IntPtr clientPtr;
 		public List<Resource> resources = new List<Resource>();
-		public List<WlRegion> regions = new List<WlRegion>();
+		public List<WlRegion> Regions = new List<WlRegion>();
 		public WlKeyboard keyboard;
 		public WlPointer pointer;
 
@@ -33,7 +33,7 @@ namespace Wayland.Server
 		}
 
 		public override string ToString() {
-			return string.Format("<Client@{0:X8}>", clientPtr.ToInt32());
+			return string.Format("<Client@{0:X8}>(no resources: {1})", clientPtr.ToInt32(), resources.Count);
 		}
 
 		public bool Equals(Client other)

@@ -102,9 +102,9 @@ namespace Wayland.Scanner {
 		String.Join("\n", requests.Select(i => i.ToInitializeImplementation())) +
 		"\n\t\t\treturn impl;" +
 		"\n\t\t}\n" +
-		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr clientPtr, UInt32 id, bool addToClient = true) \n\t\t{\n" +
+		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr clientPtr, Int32 version, UInt32 id, bool addToClient = true) \n\t\t{\n" +
 		"\t\t\tthis.client = Display.GetClient(clientPtr);\n" +
-		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
+		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, version, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
 		"managedImplementation = this.InitializeImplementation();" +
 		"\n\t\t\tthis.deleteFunction = new DeleteFunction(this.Delete);" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
@@ -116,9 +116,9 @@ namespace Wayland.Scanner {
 		"\n\t\t\t}\n" +
 		"\t\t}\n" +
 		// Have a second constructor where we can set an alternative resource as data to SetImplementation	
-		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr clientPtr, UInt32 id, IntPtr otherResource, bool addToClient = true) \n\t\t{\n" +
+		"\n\t\tpublic " + Scanner.TitleCase(name) +  "(IntPtr clientPtr, Int32 version, UInt32 id, IntPtr otherResource, bool addToClient = true) \n\t\t{\n" +
 		"\t\t\tthis.client = Display.GetClient(clientPtr);\n" +
-		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, 1, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
+		string.Format("\t\t\tthis.resource = Resource.Create(clientPtr, {0}, version, id);\n\t\t\t", Scanner.TitleCase(this.protocol) + "Interfaces." + Scanner.ParameterCase(name) + "Interface.ifaceNative") +
 		"managedImplementation = this.InitializeImplementation();" +
 		"\n\t\t\tthis.deleteFunction = new DeleteFunction(this.Delete);" +
 		"\n\t\t\tthis.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));" +	    "\n\t\t\tMarshal.StructureToPtr(managedImplementation, this.implementation, false);" +
@@ -131,10 +131,10 @@ namespace Wayland.Scanner {
 		"\n\t\tpublic override string ToString() \n\t\t{" +
 		"\n\t\t\treturn \"" + Scanner.TitleCase(name) + "@\" + resource;" +
 		"\n\t\t}\n" +
-		"\n\t\t~" + Scanner.TitleCase(name) +  "() \n\t\t{" +
-		"\n\t\t\t//Console.WriteLine(\"Resource \" + this + \" is being collected\");" + 
-		"\n\t\t\tMarshal.FreeHGlobal(this.implementation);" +
-		"\n\t\t}\n" +
+		//"\n\t\t~" + Scanner.TitleCase(name) +  "() \n\t\t{" +
+		//"\n\t\t\t//Console.WriteLine(\"Resource \" + this + \" is being collected\");" + 
+		//"\n\t\t\tMarshal.FreeHGlobal(this.implementation);" +
+		//"\n\t\t}\n" +
 //		"\n" + String.Join("\n", requests.Select(i => i.ToDelegate())) +
 		"\n\n\t\t[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]\n\t\tpublic struct " + Scanner.TitleCase(name) + "Implementation\n\t\t{\n" +
 		String.Join("\n", requests.Select(i => i.ToStructMethod())) +

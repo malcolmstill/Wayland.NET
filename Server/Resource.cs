@@ -19,12 +19,24 @@ namespace Wayland.Server
 			return "Resource@" + resource;
 		}
 
-		/*
+		
 		~Resource()
 		{
-			Console.WriteLine("Resource " + this + " is being collected");
+			if (implementation != IntPtr.Zero)
+			{
+				Marshal.FreeHGlobal(this.implementation);
+			}
+			
+			// We can't call wl_resource_destroy here because wl_client_destroy may
+			// already have freed the resouce
+			/*
+			if (resource != IntPtr.Zero)
+			{
+				wl_resource_destroy(resource);
+			}
+			*/
 		}
-		*/
+		
 
 		const string lib = "libwayland-server.so";
 
@@ -45,15 +57,15 @@ namespace Wayland.Server
 		public static extern IntPtr GetUserData(IntPtr resource);
 
 		[DllImport(lib, EntryPoint="wl_resource_get_version")]
-		public static extern UInt32 GetVersion(IntPtr resource);
-		public UInt32 GetVersion()
+		public static extern Int32 GetVersion(IntPtr resource);
+		public Int32 GetVersion()
 		{
 			return GetVersion(resource);
 		}
 
 		public virtual void Delete(IntPtr resource)
 		{
-			Console.WriteLine("Delete function not overridden " + this);
+			// Console.WriteLine("Delete function not overridden " + this);
 		}
 
 		[DllImport(lib, EntryPoint="wl_resource_destroy")]

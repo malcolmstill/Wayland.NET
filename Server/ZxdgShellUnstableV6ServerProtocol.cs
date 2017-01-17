@@ -152,10 +152,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			return impl;
 		}
 
-		public ZxdgShellV6(IntPtr clientPtr, UInt32 id, bool addToClient = true) 
+		public ZxdgShellV6(IntPtr clientPtr, Int32 version, UInt32 id, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgShellV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgShellV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -167,10 +167,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			}
 		}
 
-		public ZxdgShellV6(IntPtr clientPtr, UInt32 id, IntPtr otherResource, bool addToClient = true) 
+		public ZxdgShellV6(IntPtr clientPtr, Int32 version, UInt32 id, IntPtr otherResource, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgShellV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgShellV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -185,12 +185,6 @@ namespace XdgShellUnstableV6.Server.Protocol
 		public override string ToString() 
 		{
 			return "ZxdgShellV6@" + resource;
-		}
-
-		~ZxdgShellV6() 
-		{
-			//Console.WriteLine("Resource " + this + " is being collected");
-			Marshal.FreeHGlobal(this.implementation);
 		}
 
 
@@ -272,10 +266,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			return impl;
 		}
 
-		public ZxdgPositionerV6(IntPtr clientPtr, UInt32 id, bool addToClient = true) 
+		public ZxdgPositionerV6(IntPtr clientPtr, Int32 version, UInt32 id, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPositionerV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPositionerV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -287,10 +281,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			}
 		}
 
-		public ZxdgPositionerV6(IntPtr clientPtr, UInt32 id, IntPtr otherResource, bool addToClient = true) 
+		public ZxdgPositionerV6(IntPtr clientPtr, Int32 version, UInt32 id, IntPtr otherResource, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPositionerV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPositionerV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -305,12 +299,6 @@ namespace XdgShellUnstableV6.Server.Protocol
 		public override string ToString() 
 		{
 			return "ZxdgPositionerV6@" + resource;
-		}
-
-		~ZxdgPositionerV6() 
-		{
-			//Console.WriteLine("Resource " + this + " is being collected");
-			Marshal.FreeHGlobal(this.implementation);
 		}
 
 
@@ -414,10 +402,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			return impl;
 		}
 
-		public ZxdgSurfaceV6(IntPtr clientPtr, UInt32 id, bool addToClient = true) 
+		public ZxdgSurfaceV6(IntPtr clientPtr, Int32 version, UInt32 id, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgSurfaceV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgSurfaceV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -429,10 +417,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			}
 		}
 
-		public ZxdgSurfaceV6(IntPtr clientPtr, UInt32 id, IntPtr otherResource, bool addToClient = true) 
+		public ZxdgSurfaceV6(IntPtr clientPtr, Int32 version, UInt32 id, IntPtr otherResource, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgSurfaceV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgSurfaceV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -447,12 +435,6 @@ namespace XdgShellUnstableV6.Server.Protocol
 		public override string ToString() 
 		{
 			return "ZxdgSurfaceV6@" + resource;
-		}
-
-		~ZxdgSurfaceV6() 
-		{
-			//Console.WriteLine("Resource " + this + " is being collected");
-			Marshal.FreeHGlobal(this.implementation);
 		}
 
 
@@ -551,10 +533,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			return impl;
 		}
 
-		public ZxdgToplevelV6(IntPtr clientPtr, UInt32 id, bool addToClient = true) 
+		public ZxdgToplevelV6(IntPtr clientPtr, Int32 version, UInt32 id, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgToplevelV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgToplevelV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -566,10 +548,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			}
 		}
 
-		public ZxdgToplevelV6(IntPtr clientPtr, UInt32 id, IntPtr otherResource, bool addToClient = true) 
+		public ZxdgToplevelV6(IntPtr clientPtr, Int32 version, UInt32 id, IntPtr otherResource, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgToplevelV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgToplevelV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -584,12 +566,6 @@ namespace XdgShellUnstableV6.Server.Protocol
 		public override string ToString() 
 		{
 			return "ZxdgToplevelV6@" + resource;
-		}
-
-		~ZxdgToplevelV6() 
-		{
-			//Console.WriteLine("Resource " + this + " is being collected");
-			Marshal.FreeHGlobal(this.implementation);
 		}
 
 
@@ -773,10 +749,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			return impl;
 		}
 
-		public ZxdgPopupV6(IntPtr clientPtr, UInt32 id, bool addToClient = true) 
+		public ZxdgPopupV6(IntPtr clientPtr, Int32 version, UInt32 id, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPopupV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPopupV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -788,10 +764,10 @@ namespace XdgShellUnstableV6.Server.Protocol
 			}
 		}
 
-		public ZxdgPopupV6(IntPtr clientPtr, UInt32 id, IntPtr otherResource, bool addToClient = true) 
+		public ZxdgPopupV6(IntPtr clientPtr, Int32 version, UInt32 id, IntPtr otherResource, bool addToClient = true) 
 		{
 			this.client = Display.GetClient(clientPtr);
-			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPopupV6Interface.ifaceNative, 1, id);
+			this.resource = Resource.Create(clientPtr, XdgShellUnstableV6Interfaces.zxdgPopupV6Interface.ifaceNative, version, id);
 			managedImplementation = this.InitializeImplementation();
 			this.deleteFunction = new DeleteFunction(this.Delete);
 			this.implementation = Marshal.AllocHGlobal(Marshal.SizeOf(managedImplementation));
@@ -806,12 +782,6 @@ namespace XdgShellUnstableV6.Server.Protocol
 		public override string ToString() 
 		{
 			return "ZxdgPopupV6@" + resource;
-		}
-
-		~ZxdgPopupV6() 
-		{
-			//Console.WriteLine("Resource " + this + " is being collected");
-			Marshal.FreeHGlobal(this.implementation);
 		}
 
 

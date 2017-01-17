@@ -14,22 +14,22 @@ namespace Wayland.Server
 
 		public WlRect(int x, int y, int width, int height, Operation op)
 		{
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
+			this.X = x;
+			this.Y = y;
+			this.Width = width;
+			this.Height = height;
 			operation = op;
 		}
 
-		public int x { get; set; }
-		public int y { get; set; }
-		public int width { get; set; }
-		public int height { get; set; }
+		public int X { get; set; }
+		public int Y { get; set; }
+		public int Width { get; set; }
+		public int Height { get; set; }
 		public Operation operation { get; set; }
 		
 		public bool ContainsPoint(int x, int y)
 		{
-			return (x >= this.x && x <= (this.x + this.width) && y >= this.y && y <= (this.y + this.height));
+			return (x >= this.X && x <= (this.X + this.Width) && y >= this.Y && y <= (this.Y + this.Height));
 		}
     }
 }
